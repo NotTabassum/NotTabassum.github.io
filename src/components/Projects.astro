@@ -1,0 +1,81 @@
+---
+import Section from "./Section.astro";
+import Tags from "./Tags.astro";
+import profile from "../data/profile";
+
+const [featured, ...rest] = profile.projects;
+---
+<Section id="projects" label="Projects">
+  <article class="card featured">
+    <p class="kicker mono">Featured project</p>
+    <h3>{featured.name}</h3>
+    <p class="summary">{featured.summary}</p>
+    {featured.details && (
+      <ul class="details">
+        {featured.details.map((d) => <li>{d}</li>)}
+      </ul>
+    )}
+    <Tags items={featured.stack} label={`${featured.name} technologies`} />
+    <p class="links mono">
+      {featured.links.map((l) => <a href={l.url} rel="noopener">↗ {l.label}</a>)}
+      {featured.private && <span class="muted">🔒 Private repo</span>}
+    </p>
+  </article>
+
+  <div class="grid">
+    {rest.map((p) => (
+      <article class="card">
+        <h3>{p.name}</h3>
+        <p class="summary">{p.summary}</p>
+        <Tags items={p.stack} label={`${p.name} technologies`} />
+        <p class="links mono">
+          {p.links.map((l) => <a href={l.url} rel="noopener">↗ {l.label}</a>)}
+          {p.private && <span class="muted">🔒 Private repo</span>}
+        </p>
+      </article>
+    ))}
+  </div>
+</Section>
+
+<style>
+  .card {
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+  }
+  .featured {
+    border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+    margin-bottom: 1rem;
+    padding: 1.5rem;
+  }
+  .kicker {
+    font-size: 0.75rem;
+    color: var(--accent);
+    margin: 0 0 0.35rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  h3 { margin: 0 0 0.4rem; font-size: 1.1rem; }
+  .featured h3 { font-size: 1.4rem; }
+  .summary { margin: 0 0 0.9rem; color: var(--muted); }
+  .featured .summary { color: var(--text); }
+  .details { margin: 0 0 1rem; }
+  .details li { margin-bottom: 0.35rem; }
+  .details li::marker { color: var(--accent); }
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin: auto 0 0;
+    padding-top: 0.9rem;
+    font-size: 0.8rem;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+    gap: 1rem;
+  }
+</style>

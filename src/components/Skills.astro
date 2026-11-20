@@ -1,0 +1,25 @@
+---
+import Section from "./Section.astro";
+import Tags from "./Tags.astro";
+import profile from "../data/profile";
+---
+<Section id="skills" label="Skills">
+  <dl class="skills">
+    {profile.skills.map((g) => (
+      <div class="row">
+        <dt class="mono">{g.group}</dt>
+        <dd><Tags items={g.items} label={g.group} /></dd>
+      </div>
+    ))}
+  </dl>
+</Section>
+
+<style>
+  .skills { margin: 0; display: grid; gap: 1rem; }
+  .row { display: grid; gap: 0.4rem; }
+  dt { font-size: 0.8rem; color: var(--muted); }
+  dd { margin: 0; }
+  @media (min-width: 640px) {
+    .row { grid-template-columns: 11rem 1fr; align-items: baseline; }
+  }
+</style>

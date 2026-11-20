@@ -1,0 +1,99 @@
+---
+import Section from "./Section.astro";
+import profile from "../data/profile";
+import { formatMonth } from "../lib/format";
+
+const { ratings, solved, contests, problemCredits, teaching } = profile.cp;
+---
+<Section id="cp" label="Competitive programming">
+  <ul class="stats">
+    {ratings.map((r) => (
+      <li class="stat">
+        <span class="site mono">{r.site}</span>
+        <span class="value">{r.maxRating}</span>
+        <span class="title">{r.title} <span class="muted">· max rating</span></span>
+        <a class="handle mono" href={r.url} rel="me noopener">@{r.handle}</a>
+      </li>
+    ))}
+    <li class="stat">
+      <span class="site mono">Problems</span>
+      <span class="value">{solved}</span>
+      <span class="title">solved <span class="muted">across judges</span></span>
+    </li>
+  </ul>
+
+  <h3>Contest placements</h3>
+  <ol class="contests">
+    {contests.map((c) => (
+      <li>
+        <span class="place mono">#{c.place}</span>
+        <span class="contest">
+          {c.url ? <a href={c.url} rel="noopener">{c.name}</a> : c.name}
+          <span class="muted"> {c.year}{c.team && ` · team ${c.team}`}</span>
+        </span>
+      </li>
+    ))}
+  </ol>
+
+  <h3>Problem setting &amp; testing</h3>
+  <ul class="credits">
+    {problemCredits.map((p) => (
+      <li>
+        <span class="role mono">{p.role}</span>
+        <span>
+          {p.url ? <a href={p.url} rel="noopener">{p.contest}</a> : p.contest}{p.problem && <span>{`: “${p.problem}”`}</span>}
+          <span class="muted mono date"> {formatMonth(p.date)}</span>
+        </span>
+      </li>
+    ))}
+  </ul>
+  <p class="teaching">{teaching}</p>
+</Section>
+
+<style>
+  .stats {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.5rem), 1fr));
+    gap: 0.75rem;
+  }
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    padding: 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+  }
+  .site { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .value { font-size: 1.75rem; font-weight: 700; color: var(--accent); line-height: 1.2; font-variant-numeric: tabular-nums; }
+  .title { font-size: 0.85rem; }
+  .handle { font-size: 0.75rem; margin-top: 0.25rem; }
+  h3 { font-size: 1rem; margin: 0 0 0.75rem; }
+  .contests, .credits { list-style: none; padding: 0; margin: 0 0 2rem; }
+  .contests li, .credits li {
+    display: flex;
+    gap: 0.75rem;
+    align-items: baseline;
+    padding: 0.5rem 0;
+    border-bottom: 1px dashed var(--border);
+  }
+  .place {
+    flex: 0 0 2.75rem;
+    font-weight: 600;
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+  }
+  .contest a, .credits a { color: var(--text); }
+  .contest a:hover, .credits a:hover { color: var(--accent); }
+  .role {
+    flex: 0 0 3.75rem;
+    font-size: 0.75rem;
+    color: var(--accent);
+  }
+  .date { font-size: 0.8rem; }
+  .teaching { margin: 0; }
+</style>

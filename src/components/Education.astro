@@ -1,0 +1,26 @@
+---
+import Section from "./Section.astro";
+import profile from "../data/profile";
+import { formatRange } from "../lib/format";
+---
+<Section id="education" label="Education">
+  {profile.education.map((e) => (
+    <div class="edu">
+      <div class="head">
+        <h3>{e.schoolUrl ? <a href={e.schoolUrl} rel="noopener">{e.school}</a> : e.school}</h3>
+        <span class="dates mono">{formatRange(e.start, e.end)}</span>
+      </div>
+      <p class="degree">{e.degree}</p>
+      {e.note && <p class="muted note">{e.note}</p>}
+    </div>
+  ))}
+</Section>
+
+<style>
+  .head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; column-gap: 1rem; }
+  h3 { margin: 0; font-size: 1.1rem; }
+  h3 a { color: var(--text); }
+  .dates { font-size: 0.8rem; color: var(--muted); }
+  .degree { margin: 0.15rem 0 0.25rem; font-weight: 500; }
+  .note { margin: 0; }
+</style>

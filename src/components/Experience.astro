@@ -1,0 +1,66 @@
+---
+import Section from "./Section.astro";
+import profile from "../data/profile";
+import { formatRange } from "../lib/format";
+---
+<Section id="experience" label="Experience">
+  <ol class="timeline">
+    {profile.experience.map((job) => (
+      <li class="job">
+        <div class="job-head">
+          <h3>
+            {job.companyUrl ? <a href={job.companyUrl} rel="noopener">{job.company}</a> : job.company}
+          </h3>
+          <span class="dates mono">{formatRange(job.start, job.end)}</span>
+        </div>
+        <p class="role">
+          {job.role}{job.type && <span class="muted"> · {job.type}</span>}
+          <span class="muted"> · {job.location}</span>
+        </p>
+        <ul class="highlights">
+          {job.highlights.map((h) => <li>{h}</li>)}
+        </ul>
+        {job.links?.map((l) => (
+          <p class="extra mono"><a href={l.url} rel="noopener">↗ {l.label}</a></p>
+        ))}
+      </li>
+    ))}
+  </ol>
+</Section>
+
+<style>
+  .timeline { list-style: none; padding: 0; margin: 0; }
+  .job {
+    position: relative;
+    padding: 0 0 2rem 1.5rem;
+    border-left: 2px solid var(--border);
+  }
+  .job:last-child { padding-bottom: 0.5rem; }
+  .job::before {
+    content: "";
+    position: absolute;
+    left: -7px;
+    top: 0.45rem;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--accent);
+  }
+  .job:first-child::before { background: var(--accent); }
+  .job-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    column-gap: 1rem;
+  }
+  h3 { margin: 0; font-size: 1.15rem; }
+  h3 a { color: var(--text); }
+  .dates { font-size: 0.8rem; color: var(--muted); }
+  .role { margin: 0.15rem 0 0.75rem; font-weight: 500; }
+  .highlights { margin: 0; }
+  .highlights li { margin-bottom: 0.4rem; }
+  .highlights li::marker { color: var(--accent); }
+  .extra { font-size: 0.8rem; margin: 0.75rem 0 0; }
+</style>

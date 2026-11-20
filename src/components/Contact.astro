@@ -1,0 +1,32 @@
+---
+import Section from "./Section.astro";
+import profile from "../data/profile";
+import { formatMonth } from "../lib/format";
+---
+<Section id="contact" label="Contact">
+  <p class="lead">Hiring, collaborating, or setting a contest? I'd love to hear from you.</p>
+  <p><a class="email mono" href={`mailto:${profile.email}`}>{profile.email}</a></p>
+  <ul class="links mono">
+    {profile.links.map((l) => <li><a href={l.url} rel="me noopener">{l.label}</a></li>)}
+  </ul>
+</Section>
+<footer class="footer mono muted">
+  <span>© {profile.updated.slice(0, 4)} {profile.name}</span>
+  <span>Last updated {formatMonth(profile.updated.slice(0, 7))}</span>
+</footer>
+
+<style>
+  .lead { font-size: 1.1rem; margin: 0 0 0.75rem; }
+  .email { font-size: clamp(1rem, 4vw, 1.35rem); font-weight: 600; }
+  .links { list-style: none; padding: 0; margin: 1rem 0 0; display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; font-size: 0.9rem; }
+  .footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-top: 3rem;
+    padding-block: 1.5rem 2.5rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.75rem;
+  }
+</style>

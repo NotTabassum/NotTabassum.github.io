@@ -1,0 +1,89 @@
+---
+import "../styles/global.css";
+import ThemeToggle from "../components/ThemeToggle.astro";
+import profile from "../data/profile";
+
+interface Props {
+  title: string;
+  description: string;
+}
+const { title, description } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const nav = [
+  ["about", "About"],
+  ["experience", "Experience"],
+  ["projects", "Projects"],
+  ["cp", "CP"],
+  ["contact", "Contact"],
+];
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content={profile.name} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta property="og:type" content="profile" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary" />
+    <meta name="theme-color" content="#fbfaf7" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0e1116" media="(prefers-color-scheme: dark)" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+    />
+    <script is:inline>
+      try { var t = localStorage.getItem("theme"); if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t); } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="topbar">
+      <div class="container topbar-inner">
+        <a class="brand mono" href="#top">~/sumaiya</a>
+        <nav aria-label="Sections">
+          {nav.map(([id, label]) => <a href={`#${id}`}>{label}</a>)}
+        </nav>
+        <ThemeToggle />
+      </div>
+    </header>
+    <main id="main" class="container">
+      <slot />
+    </main>
+  </body>
+</html>
+
+<style>
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: color-mix(in srgb, var(--bg) 85%, transparent);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+  .topbar-inner {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    height: 3.5rem;
+  }
+  .brand { font-weight: 600; color: var(--text); }
+  nav { display: none; margin-left: auto; gap: 1.25rem; font-size: 0.9rem; }
+  nav a { color: var(--muted); }
+  nav a:hover { color: var(--accent); text-decoration: none; }
+  .topbar-inner :global(.theme-toggle) { margin-left: auto; }
+  @media (min-width: 720px) {
+    nav { display: flex; }
+    .topbar-inner :global(.theme-toggle) { margin-left: 0; }
+  }
+</style>
