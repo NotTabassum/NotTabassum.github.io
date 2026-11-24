@@ -5,7 +5,7 @@ import profile from "../data/profile";
 import { formatRange } from "../lib/format";
 const jobPhotos = profile.experience.filter((j) => j.photo);
 ---
-<Section id="experience" label="Experience">
+<Section id="experience" label="Experience" tone="tint">
   {jobPhotos.length > 0 && (
   <Fragment slot="aside">
     {jobPhotos.map((j) => (

@@ -2,7 +2,7 @@
 import Section from "./Section.astro";
 import profile from "../data/profile";
 import { formatMonth } from "../lib/format";
-import { gmailCompose, whatsappUrl } from "../lib/contact";
+import { formatPhone, gmailCompose, whatsappUrl } from "../lib/contact";
 
 // Profiles, each with the handle it goes to.
 const channels = profile.links.map((l) => ({ ...l, handle: new URL(l.url).pathname.split("/").filter(Boolean).pop() ?? l.url }));
@@ -19,7 +19,14 @@ const channels = profile.links.map((l) => ({ ...l, handle: new URL(l.url).pathna
         <span class="copied" role="status" aria-live="polite"></span>
       </div>
       {profile.whatsapp && (
-        <a class="link whatsapp" href={whatsappUrl(profile.whatsapp)} rel="noopener noreferrer" target="_blank">WhatsApp<span class="arrow" aria-hidden="true">↗</span></a>
+        <div class="phone-row">
+          <span class="label">WhatsApp</span>
+          <a class="link" href={whatsappUrl(profile.whatsapp)} rel="noopener noreferrer" target="_blank">{formatPhone(profile.whatsapp)}<span class="arrow" aria-hidden="true">↗</span></a>
+          <button class="copy small" type="button" data-copy={profile.whatsapp} aria-label="Copy phone number" title="Copy phone number">
+            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><rect x="8" y="8" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M16 8V4H4v12h4" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+          </button>
+          <span class="copied" role="status" aria-live="polite"></span>
+        </div>
       )}
     </div>
     <dl class="channels">
@@ -87,6 +94,11 @@ const channels = profile.links.map((l) => ({ ...l, handle: new URL(l.url).pathna
     transition: color 0.15s var(--ease-out), transform 0.12s var(--ease-out);
   }
   .copy:hover { color: var(--accent); }
+  /* With a mouse, the copy button shows only while hovering its line (or when focused); touch screens always show it. */
+  @media (hover: hover) {
+    .copy { opacity: 0; transition: opacity 0.15s var(--ease-out), color 0.15s var(--ease-out), transform 0.12s var(--ease-out); }
+    .email-row:hover .copy, .phone-row:hover .copy, .copy:focus-visible { opacity: 1; }
+  }
   .copy:active { transform: scale(0.95); }
   .copied { font-size: 0.85rem; color: var(--accent); }
   .email .arrow { margin-left: 0.12em; font-size: 0.8em; }
@@ -101,8 +113,11 @@ const channels = profile.links.map((l) => ({ ...l, handle: new URL(l.url).pathna
     border-bottom: 1px solid var(--border);
   }
   .channels dd { margin: 0; overflow-wrap: anywhere; }
-  .channels .arrow, .whatsapp .arrow { margin-left: 0.2em; }
-  .whatsapp { display: inline-block; margin-top: 1rem; font-size: 1.1rem; }
+  .channels .arrow { margin-left: 0.2em; }
+  .phone-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 0.75rem; margin-top: 0.75rem; }
+  .phone-row .link { color: var(--accent); }
+  .phone-row .arrow { margin-left: 0.2em; }
+  .copy.small { width: 2rem; height: 2rem; }
   /* Wide screens: the message and email on the left, the other channels on the right. */
   @media (min-width: 860px) {
     .layout { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); column-gap: clamp(2.5rem, 6vw, 5rem); align-items: start; }

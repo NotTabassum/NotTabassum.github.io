@@ -7,3 +7,8 @@ export function gmailCompose(email: string): string {
 export function whatsappUrl(number: string): string {
   return `https://wa.me/${number.replace(/\D/g, "")}`;
 }
+
+/** Shows a Bangladeshi number in its usual grouping, e.g. "+8801XXXXXXXXX" as "+880 1XXX-XXXXXX". */
+export function formatPhone(number: string): string {
+  return number.replace(/^\+880(\d{4})(\d{6})$/, "+880 $1-$2");
+}

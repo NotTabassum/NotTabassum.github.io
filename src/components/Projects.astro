@@ -6,7 +6,7 @@ import profile from "../data/profile";
 
 const number = (i: number) => String(i + 1).padStart(2, "0");
 ---
-<Section id="projects" label="Projects" tone="tint">
+<Section id="projects" label="Projects">
   <ol class="rows">
     {profile.projects.map((p, i) => (
       <li class:list={["row", { flip: i % 2 === 1 }]}>

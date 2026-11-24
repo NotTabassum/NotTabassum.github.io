@@ -8,7 +8,7 @@ import { formatMonth } from "../lib/format";
 const finished = (end: string) => (end.length === 4 ? end : formatMonth(end));
 const photo = profile.education.find((e) => e.photo)?.photo;
 ---
-<Section id="education" label="Education">
+<Section id="education" label="Education" tone="tint">
   <div class:list={["layout", { "has-photo": photo }]}>
     <ol class="list">
       {profile.education.map((e) => (
