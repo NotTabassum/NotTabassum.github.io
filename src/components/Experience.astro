@@ -1,66 +1,69 @@
 ---
 import Section from "./Section.astro";
+import Figure from "./Figure.astro";
 import profile from "../data/profile";
 import { formatRange } from "../lib/format";
+const jobPhotos = profile.experience.filter((j) => j.photo);
 ---
 <Section id="experience" label="Experience">
-  <ol class="timeline">
+  {jobPhotos.length > 0 && (
+  <Fragment slot="aside">
+    {jobPhotos.map((j) => (
+      <Figure photo={j.photo!} sizes="(min-width: 960px) 15rem, (min-width: 640px) 45vw, 92vw" caption={j.company} />
+    ))}
+  </Fragment>
+  )}
+  <ol class="entries">
     {profile.experience.map((job) => (
-      <li class="job">
-        <div class="job-head">
+      <li class="entry">
+        <div class="meta">
+          <span class="dates label">{formatRange(job.start, job.end)}</span>
           <h3>
-            {job.companyUrl ? <a href={job.companyUrl} rel="noopener">{job.company}</a> : job.company}
+            {job.companyUrl ? <a href={job.companyUrl} rel="noopener noreferrer" target="_blank" translate="no">{job.company}</a> : job.company}
           </h3>
-          <span class="dates mono">{formatRange(job.start, job.end)}</span>
+          <span class="where">{job.type && `${job.type} · `}{job.location}</span>
         </div>
-        <p class="role">
-          {job.role}{job.type && <span class="muted"> · {job.type}</span>}
-          <span class="muted"> · {job.location}</span>
-        </p>
-        <ul class="highlights">
-          {job.highlights.map((h) => <li>{h}</li>)}
-        </ul>
-        {job.links?.map((l) => (
-          <p class="extra mono"><a href={l.url} rel="noopener">↗ {l.label}</a></p>
-        ))}
+        <div class="body">
+          <p class="role">{job.role}</p>
+          <ul class="highlights">
+            {job.highlights.map((h) => <li>{h}</li>)}
+          </ul>
+          {job.links?.map((l) => (
+            <p class="extra"><a class="link" href={l.url} rel="noopener noreferrer" target="_blank">{l.label} <span class="arrow" aria-hidden="true">↗</span></a></p>
+          ))}
+        </div>
       </li>
     ))}
   </ol>
 </Section>
 
 <style>
-  .timeline { list-style: none; padding: 0; margin: 0; }
-  .job {
-    position: relative;
-    padding: 0 0 2rem 1.5rem;
-    border-left: 2px solid var(--border);
-  }
-  .job:last-child { padding-bottom: 0.5rem; }
-  .job::before {
+  .entries { list-style: none; padding: 0; margin: 0; }
+  .entry { display: grid; gap: 1rem; padding-block: 0 2.5rem; }
+  .entry + .entry { padding-top: 2.5rem; border-top: 1px solid var(--border); }
+  .entry:last-child { padding-bottom: 0; }
+  .meta { display: flex; flex-direction: column; gap: 0.3rem; }
+  h3 { font-size: 1.5rem; }
+  h3 a { transition: color 0.15s var(--ease-out); }
+  h3 a:hover { color: var(--accent); }
+  .where { font-size: 0.9rem; color: var(--muted); }
+  .body { min-width: 0; max-width: 46rem; }
+  .role { margin: 0 0 0.9rem; font-size: 1.15rem; font-weight: 600; }
+  .highlights { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.6rem; }
+  .highlights li { position: relative; padding-left: 1.25rem; }
+  .highlights li::before {
     content: "";
     position: absolute;
-    left: -7px;
-    top: 0.45rem;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: var(--bg);
-    border: 2px solid var(--accent);
+    left: 0;
+    top: 0.75em;
+    width: 0.6rem;
+    height: 2px;
+    background: var(--line);
   }
-  .job:first-child::before { background: var(--accent); }
-  .job-head {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: baseline;
-    column-gap: 1rem;
+  .extra { margin: 1.1rem 0 0; font-size: 0.95rem; }
+
+  @media (min-width: 760px) {
+    .entry { grid-template-columns: 14rem minmax(0, 1fr); column-gap: clamp(2rem, 5vw, 4rem); }
+    .role { margin-top: 1.4rem; }
   }
-  h3 { margin: 0; font-size: 1.15rem; }
-  h3 a { color: var(--text); }
-  .dates { font-size: 0.8rem; color: var(--muted); }
-  .role { margin: 0.15rem 0 0.75rem; font-weight: 500; }
-  .highlights { margin: 0; }
-  .highlights li { margin-bottom: 0.4rem; }
-  .highlights li::marker { color: var(--accent); }
-  .extra { font-size: 0.8rem; margin: 0.75rem 0 0; }
 </style>

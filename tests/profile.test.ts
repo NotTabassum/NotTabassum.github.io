@@ -6,7 +6,7 @@ const text = JSON.stringify(profile);
 
 describe("profile data", () => {
   it("contains no phone number", () => {
-    expect(containsPhone(text)).toBe(false);
+    expect(containsPhone(text, profile.whatsapp ? [profile.whatsapp] : [])).toBe(false);
   });
 
   it("contains no internal company names", () => {

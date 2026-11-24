@@ -3,9 +3,15 @@ import { createHash } from "node:crypto";
 /**
  * Bangladeshi mobile numbers (01[3-9] + 8 digits, optionally +880), however they
  * are spaced or punctuated. Separators are stripped before matching.
+ * `allowed` lists numbers published on purpose; only those exact numbers are ignored.
  */
-export function containsPhone(text: string): boolean {
-  return /01[3-9]\d{8}/.test(text.replace(/[\s().\-–]/g, ""));
+export function containsPhone(text: string, allowed: string[] = []): boolean {
+  let digits = text.replace(/[\s().\-–]/g, "");
+  for (const n of allowed) {
+    const local = n.replace(/\D/g, "").replace(/^880/, "0");
+    digits = digits.split(local).join("");
+  }
+  return /01[3-9]\d{8}/.test(digits);
 }
 
 /**

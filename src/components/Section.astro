@@ -2,29 +2,81 @@
 interface Props {
   id: string;
   label: string;
+  /** Ground the section sits on: page color, a seafoam band, or a navy band. */
+  tone?: "plain" | "tint" | "deep";
 }
-const { id, label } = Astro.props;
+const { id, label, tone = "plain" } = Astro.props;
+// A section only gets a photo column when its "aside" slot actually renders something.
+const photos = Astro.slots.has("aside") ? (await Astro.slots.render("aside")).trim() : "";
+const hasPhotos = photos.length > 0;
 ---
-<section id={id} aria-labelledby={`${id}-h`} class="section">
-  <h2 id={`${id}-h`} class="section-label"><span aria-hidden="true">// </span>{label}</h2>
-  <slot />
+<section id={id} aria-labelledby={`${id}-h`} class:list={["band", `tone-${tone}`]}>
+  <div class="section container">
+    <header class="section-head">
+      <h2 id={`${id}-h`} class="section-title">{label}</h2>
+      {Astro.slots.has("action") && <div class="section-action"><slot name="action" /></div>}
+    </header>
+    <div class:list={["section-grid", { "has-photos": hasPhotos }]}>
+      {hasPhotos && <div class="section-photos" set:html={photos} />}
+      <div class="section-body">
+        <slot />
+      </div>
+    </div>
+  </div>
 </section>
 
 <style>
-  .section {
-    padding-block: 3rem 1rem;
-    scroll-margin-top: 4rem;
+  .band {
+    --pad: clamp(3.5rem, 8vw, 6.5rem);
+    /* Menu jumps land with the heading just under the header, not a whole padding lower. */
+    scroll-margin-top: calc(1.25rem - var(--pad));
   }
-  .section-label {
-    font-family: var(--font-mono);
-    font-size: 0.85rem;
-    font-weight: 500;
-    letter-spacing: 0.02em;
-    text-transform: lowercase;
-    color: var(--accent);
-    margin: 0 0 1.5rem;
+  /* Colored bands get room above and below; plain sections only need room above. */
+  .band:not(.tone-plain) { margin-top: var(--pad); }
+  .section { padding-top: var(--pad); }
+  .band:not(.tone-plain) .section { padding-bottom: var(--pad); }
+
+  .section-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem 1.5rem;
+    padding-bottom: 1.25rem;
+    margin-bottom: clamp(2rem, 4vw, 3rem);
+    border-bottom: 1px solid var(--border);
   }
-  .section-label span {
-    color: var(--muted);
+  .section-title {
+    font-size: clamp(2rem, 4.2vw, 2.85rem);
+    letter-spacing: -0.015em;
+  }
+  .section-action { font-size: 0.95rem; }
+
+  .section-body { min-width: 0; }
+  /* Photos of a section's events sit in their own column on the left, never inside lists or tables. */
+  .section-photos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
+    gap: 1.25rem;
+    order: 2;
+    margin-top: 2.5rem;
+  }
+  @media (min-width: 960px) {
+    .has-photos {
+      display: grid;
+      grid-template-columns: 15rem minmax(0, 1fr);
+      column-gap: clamp(2.5rem, 5vw, 4.5rem);
+      align-items: start;
+    }
+    .section-photos {
+      grid-template-columns: 1fr;
+      order: 0;
+      margin-top: 0;
+      position: sticky;
+      top: calc(var(--header-h) + 1.5rem);
+    }
+  }
+  @media (max-width: 959px) {
+    .has-photos { display: flex; flex-direction: column; }
   }
 </style>

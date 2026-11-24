@@ -1,82 +1,204 @@
+/*
+  Visual system: theme-factory "Ocean Depths" (navy, teal, seafoam, cream).
+  - Sections sit on three grounds: plain (cream), tint (seafoam) and deep (navy). Each ground
+    re-declares the tokens, so components never need to know which ground they are on.
+  - Type: Source Serif 4 for headings, Source Sans 3 for text, Source Code Pro for labels and data.
+  - Theme hues that fail 4.5:1 for small text (#2d8b8b teal, #708090 slate) are used only for
+    rules and focus rings (--line); text and buttons use a deeper shade of the same hue (--accent).
+  - Shape lock: square corners everywhere.
+*/
 :root {
-  --bg: #fbfaf7;
-  --surface: #ffffff;
-  --text: #1c1f24;
-  --muted: #5d6470;
-  --border: #e4e2dc;
-  --accent: #0f766e;
-  --accent-soft: #e6f4f1;
-  --font-sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --font-display: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --font-sans: "Source Sans 3", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Source Code Pro", ui-monospace, Menlo, Consolas, monospace;
+  --header-h: 4rem;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+
+  /* Ocean Depths, light */
+  --bg: #f1faee;
+  --surface: #e2f1ee;
+  --text: #1a2332;
+  --muted: #4a5a66;
+  --border: #cfe3e0;
+  --rule: #1a2332;
+  --line: #2d8b8b;
+  --accent: #1f6f6f;
+  --on-accent: #f1faee;
+  --chip-bg: #d2ebe8;
+  --chip-fg: #174f4f;
   color-scheme: light;
 }
 
+/* The header wraps to two rows on phones (see Base.astro). */
+@media (max-width: 639px) { :root { --header-h: 6.25rem; } }
+
+/* Ocean Depths, dark: the theme's own navy ground. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #0e1116;
-    --surface: #161a21;
-    --text: #e6e8eb;
-    --muted: #9aa3ae;
-    --border: #262c35;
-    --accent: #5eead4;
-    --accent-soft: #12302d;
+    --bg: #1a2332;
+    --surface: #212c3e;
+    --text: #f1faee;
+    --muted: #a3b4bd;
+    --border: #2c3a4f;
+    --rule: #a8dadc;
+    --line: #2d8b8b;
+    --accent: #a8dadc;
+    --on-accent: #1a2332;
+    --chip-bg: #24384a;
+    --chip-fg: #a8dadc;
     color-scheme: dark;
   }
 }
-
 :root[data-theme="dark"] {
-  --bg: #0e1116;
-  --surface: #161a21;
-  --text: #e6e8eb;
-  --muted: #9aa3ae;
-  --border: #262c35;
-  --accent: #5eead4;
-  --accent-soft: #12302d;
+  --bg: #1a2332;
+  --surface: #212c3e;
+  --text: #f1faee;
+  --muted: #a3b4bd;
+  --border: #2c3a4f;
+  --rule: #a8dadc;
+  --line: #2d8b8b;
+  --accent: #a8dadc;
+  --on-accent: #1a2332;
+  --chip-bg: #24384a;
+  --chip-fg: #a8dadc;
   color-scheme: dark;
 }
 
+/* Grounds. Light mode first, then dark-mode variants of the same two grounds. */
+.tone-tint {
+  --bg: #dff0ed;
+  --surface: #f1faee;
+  --border: #bfdcd8;
+  --chip-bg: #c4e3df;
+}
+.tone-deep {
+  --bg: #1a2332;
+  --surface: #212c3e;
+  --text: #f1faee;
+  --muted: #a3b4bd;
+  --border: #2c3a4f;
+  --rule: #a8dadc;
+  --accent: #a8dadc;
+  --on-accent: #1a2332;
+  --chip-bg: #24384a;
+  --chip-fg: #a8dadc;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .tone-tint { --bg: #202b3d; --surface: #273449; --border: #34445c; --chip-bg: #2b4257; }
+  :root:not([data-theme="light"]) .tone-deep { --bg: #111925; --surface: #18212f; --border: #253244; }
+}
+:root[data-theme="dark"] .tone-tint { --bg: #202b3d; --surface: #273449; --border: #34445c; --chip-bg: #2b4257; }
+:root[data-theme="dark"] .tone-deep { --bg: #111925; --surface: #18212f; --border: #253244; }
+.tone-tint, .tone-deep { background: var(--bg); color: var(--text); }
+
 *, *::before, *::after { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  scroll-padding-top: var(--header-h);
+}
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+@media (pointer: fine) { html { overscroll-behavior: none; } }
 
 body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-sans);
-  font-size: 1rem;
-  line-height: 1.65;
-  overflow-wrap: anywhere;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  overflow-wrap: break-word;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
 }
 
-a { color: var(--accent); text-decoration: none; }
-a:hover { text-decoration: underline; text-underline-offset: 3px; }
-a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+::selection { background: var(--accent); color: var(--on-accent); }
 
-h1, h2, h3 { line-height: 1.25; }
-ul { padding-left: 1.1rem; }
+a { color: inherit; text-decoration: none; }
+a:focus-visible, button:focus-visible {
+  outline: 2px solid var(--line);
+  outline-offset: 3px;
+}
+
+h1, h2, h3 { font-family: var(--font-display); font-weight: 400; line-height: 1.15; text-wrap: balance; margin: 0; }
+p, li, dd { text-wrap: pretty; }
 
 .container {
-  max-width: 48rem;
+  max-width: 74rem;
   margin-inline: auto;
   padding-inline: 16px;
 }
-@media (min-width: 640px) { .container { padding-inline: 24px; } }
+@media (min-width: 640px) { .container { padding-inline: 32px; } }
 
-.mono { font-family: var(--font-mono); }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
 .muted { color: var(--muted); }
 
-.tags { display: flex; flex-wrap: wrap; gap: 0.4rem; list-style: none; padding: 0; margin: 0; }
+/* Small mono label for metadata, e.g. "01 · Web app". */
+.label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+}
+
+/* Text link: underline that thickens, arrow that nudges. */
+.link {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  transition: color 0.15s var(--ease-out), text-decoration-thickness 0.15s var(--ease-out);
+}
+.link:hover { color: var(--accent); text-decoration-thickness: 2px; }
+.arrow { display: inline-block; transition: transform 0.2s var(--ease-out); }
+a:hover .arrow { transform: translate(2px, -2px); }
+
+/* Technology lists are small seafoam chips. */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
 .tag {
   font-family: var(--font-mono);
   font-size: 0.75rem;
-  padding: 0.15rem 0.5rem;
-  border-radius: 999px;
-  background: var(--accent-soft);
-  color: var(--accent);
+  line-height: 1;
+  padding: 0.35rem 0.5rem;
+  background: var(--chip-bg);
+  color: var(--chip-fg);
   white-space: nowrap;
 }
 
-.skip-link { position: absolute; left: -999px; top: 0.5rem; }
-.skip-link:focus { left: 0.5rem; background: var(--surface); padding: 0.5rem 0.75rem; z-index: 10; }
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute;
+  left: 0.5rem;
+  top: 0.5rem;
+  z-index: 50;
+  padding: 0.5rem 0.75rem;
+  background: var(--text);
+  color: var(--bg);
+  transform: translateY(-200%);
+}
+.skip-link:focus { transform: none; }
+
+/* The one orchestrated moment: the hero settles in on load. Content is static under reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+  .rise {
+    animation: rise 0.7s var(--ease-out) both;
+    animation-delay: calc(var(--i, 0) * 70ms);
+  }
+  @keyframes rise { from { opacity: 0; transform: translateY(12px); } }
+}

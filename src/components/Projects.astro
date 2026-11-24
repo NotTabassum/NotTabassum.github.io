@@ -1,81 +1,103 @@
 ---
 import Section from "./Section.astro";
-import Tags from "./Tags.astro";
+import Figure from "./Figure.astro";
 import profile from "../data/profile";
 
-const [featured, ...rest] = profile.projects;
----
-<Section id="projects" label="Projects">
-  <article class="card featured">
-    <p class="kicker mono">Featured project</p>
-    <h3>{featured.name}</h3>
-    <p class="summary">{featured.summary}</p>
-    {featured.details && (
-      <ul class="details">
-        {featured.details.map((d) => <li>{d}</li>)}
-      </ul>
-    )}
-    <Tags items={featured.stack} label={`${featured.name} technologies`} />
-    <p class="links mono">
-      {featured.links.map((l) => <a href={l.url} rel="noopener">↗ {l.label}</a>)}
-      {featured.private && <span class="muted">🔒 Private repo</span>}
-    </p>
-  </article>
 
-  <div class="grid">
-    {rest.map((p) => (
-      <article class="card">
-        <h3>{p.name}</h3>
-        <p class="summary">{p.summary}</p>
-        <Tags items={p.stack} label={`${p.name} technologies`} />
-        <p class="links mono">
-          {p.links.map((l) => <a href={l.url} rel="noopener">↗ {l.label}</a>)}
-          {p.private && <span class="muted">🔒 Private repo</span>}
-        </p>
-      </article>
+const number = (i: number) => String(i + 1).padStart(2, "0");
+---
+<Section id="projects" label="Projects" tone="tint">
+  <ol class="rows">
+    {profile.projects.map((p, i) => (
+      <li class:list={["row", { flip: i % 2 === 1 }]}>
+        <div class="media">
+          <Figure photo={p.photo ?? { pending: true }} sizes="(min-width: 860px) 36rem, 92vw" ratio="16 / 10" />
+        </div>
+        <div class="info">
+          <p class="label">{number(i)} · {p.kind}</p>
+          <h3 translate="no">{p.name}</h3>
+          <p class="summary">{p.summary}</p>
+          <dl class="facts">
+            {p.status && (
+              <div>
+                <dt>Status</dt>
+                <dd><span class:list={["dot", { live: p.status.startsWith("Live") }]} aria-hidden="true"></span>{p.status}</dd>
+              </div>
+            )}
+            <div>
+              <dt>Runs on</dt>
+              <dd>{p.runsOn}</dd>
+            </div>
+            <div>
+              <dt>Stack</dt>
+              <dd>{p.stack.join(" · ")}</dd>
+            </div>
+            {p.tools && (
+              <div>
+                <dt>Tools</dt>
+                <dd>{p.tools.join(" · ")}</dd>
+              </div>
+            )}
+          </dl>
+          <p class="links">
+            {p.links.map((l) => <a class="link" href={l.url} rel="noopener noreferrer" target="_blank">{l.label} <span class="arrow" aria-hidden="true">↗</span></a>)}
+          </p>
+        </div>
+      </li>
     ))}
-  </div>
+  </ol>
 </Section>
 
 <style>
-  .card {
-    display: flex;
-    flex-direction: column;
+  .rows { list-style: none; padding: 0; margin: 0; display: grid; gap: clamp(3.5rem, 8vw, 6rem); }
+  .row { display: grid; gap: 1.75rem; }
+  .media {
     background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 0.75rem;
-    padding: 1.25rem;
+    padding: clamp(1rem, 3vw, 2.25rem);
   }
-  .featured {
-    border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
-    margin-bottom: 1rem;
-    padding: 1.5rem;
+  .info { min-width: 0; }
+  h3 {
+    margin-top: 0.5rem;
+    font-size: clamp(1.75rem, 3.4vw, 2.4rem);
+    letter-spacing: -0.015em;
   }
-  .kicker {
-    font-size: 0.75rem;
-    color: var(--accent);
-    margin: 0 0 0.35rem;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
+  .summary { margin: 0.9rem 0 1.25rem; max-width: 34rem; }
+  .facts {
+    display: grid;
+    gap: 0.5rem;
+    margin: 0 0 1.25rem;
+    font-size: 0.95rem;
   }
-  h3 { margin: 0 0 0.4rem; font-size: 1.1rem; }
-  .featured h3 { font-size: 1.4rem; }
-  .summary { margin: 0 0 0.9rem; color: var(--muted); }
-  .featured .summary { color: var(--text); }
-  .details { margin: 0 0 1rem; }
-  .details li { margin-bottom: 0.35rem; }
-  .details li::marker { color: var(--accent); }
+  .facts div { display: grid; grid-template-columns: 5.5rem minmax(0, 1fr); gap: 1rem; }
+  .facts dt { color: var(--muted); }
+  .facts dd { margin: 0; }
+  .dot {
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    margin-right: 0.45rem;
+    border-radius: 50%;
+    background: #e0a526;
+    vertical-align: 0.1em;
+  }
+  /* Teal when live, amber otherwise (in progress). */
+  .dot.live { background: var(--line); }
   .links {
     display: flex;
     flex-wrap: wrap;
-    gap: 1rem;
-    margin: auto 0 0;
-    padding-top: 0.9rem;
-    font-size: 0.8rem;
+    align-items: center;
+    gap: 0.5rem 1.25rem;
+    margin: 0;
+    font-size: 0.95rem;
   }
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
-    gap: 1rem;
+
+  /* Wide screens: media and text side by side, switching sides on every other row. */
+  @media (min-width: 860px) {
+    .row {
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+      column-gap: clamp(2.5rem, 5vw, 4.5rem);
+      align-items: center;
+    }
+    .flip .media { order: 2; }
   }
 </style>

@@ -1,12 +1,12 @@
 ---
 import Base from "../layouts/Base.astro";
 import Hero from "../components/Hero.astro";
-import About from "../components/About.astro";
 import Experience from "../components/Experience.astro";
 import Projects from "../components/Projects.astro";
 import CompetitiveProgramming from "../components/CompetitiveProgramming.astro";
 import Skills from "../components/Skills.astro";
 import Education from "../components/Education.astro";
+import Hobbies from "../components/Hobbies.astro";
 import Contact from "../components/Contact.astro";
 import profile from "../data/profile";
 
@@ -14,11 +14,11 @@ const title = `${profile.name} · Backend Software Engineer`;
 ---
 <Base title={title} description={`${profile.headline}. ${profile.pitch}`}>
   <Hero />
-  <About />
   <Experience />
   <Projects />
   <CompetitiveProgramming />
   <Skills />
   <Education />
+  <Hobbies />
   <Contact />
 </Base>

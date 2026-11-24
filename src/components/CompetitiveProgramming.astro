@@ -1,99 +1,181 @@
 ---
 import Section from "./Section.astro";
+import Figure from "./Figure.astro";
 import profile from "../data/profile";
 import { formatMonth } from "../lib/format";
 
 const { ratings, solved, contests, problemCredits, teaching } = profile.cp;
+const creditColumns = [
+  { title: "As a Setter", items: problemCredits.filter((p) => p.role === "Setter") },
+  { title: "As a Tester", items: problemCredits.filter((p) => p.role === "Tester") },
+].filter((c) => c.items.length > 0);
+const contestPhotos = contests.filter((c) => c.photo);
 ---
-<Section id="cp" label="Competitive programming">
+<Section id="cp" label="Competitive Programming">
   <ul class="stats">
     {ratings.map((r) => (
       <li class="stat">
-        <span class="site mono">{r.site}</span>
+        <span class="label" translate="no">{r.site}</span>
         <span class="value">{r.maxRating}</span>
-        <span class="title">{r.title} <span class="muted">· max rating</span></span>
-        <a class="handle mono" href={r.url} rel="me noopener">@{r.handle}</a>
+        <span class="title">{r.title} · max rating</span>
+        <a class="handle mono" href={r.url} rel="me noopener noreferrer" target="_blank" translate="no">@{r.handle}</a>
       </li>
     ))}
     <li class="stat">
-      <span class="site mono">Problems</span>
+      <span class="label">Problems solved</span>
       <span class="value">{solved}</span>
-      <span class="title">solved <span class="muted">across judges</span></span>
+      <span class="title">across online judges</span>
     </li>
   </ul>
 
-  <h3>Contest placements</h3>
-  <ol class="contests">
+  <h3>Best Results</h3>
+  <ol class="results">
     {contests.map((c) => (
-      <li>
-        <span class="place mono">#{c.place}</span>
-        <span class="contest">
-          {c.url ? <a href={c.url} rel="noopener">{c.name}</a> : c.name}
-          <span class="muted"> {c.year}{c.team && ` · team ${c.team}`}</span>
-        </span>
+      <li class="result">
+        <span class="rank">#{c.place}</span>
+        <div class="what">
+          <p class="name">{c.url ? <a class="link" href={c.url} rel="noopener noreferrer" target="_blank">{c.name}</a> : c.name}</p>
+          <p class="meta"><span class="mono">{c.year}</span>{c.team && <span translate="no"> · {c.team}</span>}</p>
+        </div>
       </li>
     ))}
   </ol>
 
-  <h3>Problem setting &amp; testing</h3>
-  <ul class="credits">
-    {problemCredits.map((p) => (
-      <li>
-        <span class="role mono">{p.role}</span>
-        <span>
-          {p.url ? <a href={p.url} rel="noopener">{p.contest}</a> : p.contest}{p.problem && <span>{`: “${p.problem}”`}</span>}
-          <span class="muted mono date"> {formatMonth(p.date)}</span>
-        </span>
-      </li>
+  {contestPhotos.length > 0 && (
+    <ul class="moments">
+      {contestPhotos.map((c) => (
+        <li>
+          <Figure photo={c.photo!} sizes="(min-width: 860px) 22rem, (min-width: 560px) 45vw, 92vw" caption={`${c.name} ${c.year} · #${c.place}`} />
+        </li>
+      ))}
+    </ul>
+  )}
+
+  <h3>Problem Setting &amp; Testing</h3>
+  <div class="credits">
+    {creditColumns.map((col) => (
+      <div class="credit-col">
+        <h4>{col.title}</h4>
+        <ul>
+          {col.items.map((p) => (
+            <li class="credit">
+              <p class="name">{p.url ? <a class="link" href={p.url} rel="noopener noreferrer" target="_blank">{p.contest}</a> : p.contest}{p.problem && <span>{`: “${p.problem}”`}</span>}</p>
+              <span class="date mono">{formatMonth(p.date)}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
     ))}
-  </ul>
-  <p class="teaching">{teaching}</p>
+  </div>
+
+  <aside class="mentoring">
+    <h4>Mentoring</h4>
+    <p>{teaching}</p>
+  </aside>
 </Section>
 
 <style>
   .stats {
     list-style: none;
     padding: 0;
-    margin: 0 0 2rem;
+    margin: 0 0 3.5rem;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.5rem), 1fr));
-    gap: 0.75rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
   }
   .stat {
     display: flex;
     flex-direction: column;
-    gap: 0.1rem;
-    padding: 1rem;
+    align-items: center;
+    text-align: center;
+    gap: 0.2rem;
+    min-width: 0;
+    padding: 1.25rem 1.25rem 1.1rem;
     background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 0.75rem;
+    border-top: 2px solid var(--line);
   }
-  .site { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
-  .value { font-size: 1.75rem; font-weight: 700; color: var(--accent); line-height: 1.2; font-variant-numeric: tabular-nums; }
-  .title { font-size: 0.85rem; }
-  .handle { font-size: 0.75rem; margin-top: 0.25rem; }
-  h3 { font-size: 1rem; margin: 0 0 0.75rem; }
-  .contests, .credits { list-style: none; padding: 0; margin: 0 0 2rem; }
-  .contests li, .credits li {
-    display: flex;
+  .value {
+    font-family: var(--font-display);
+    font-size: clamp(2.25rem, 4.5vw, 3rem);
+    line-height: 1.05;
+    color: var(--accent);
+    margin-top: 0.4rem;
+  }
+  .title { font-weight: 600; }
+  .handle { margin-top: 0.35rem; font-size: 0.8rem; color: var(--muted); }
+  .handle:hover { color: var(--accent); }
+  @media (min-width: 860px) { .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+  h3 { font-size: 1.5rem; margin: 0 0 1.25rem; }
+
+  .results {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 3rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
     gap: 0.75rem;
+  }
+  .result {
+    display: grid;
+    grid-template-columns: 4.25rem minmax(0, 1fr);
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: var(--surface);
+  }
+  .rank {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    line-height: 1;
+    color: var(--accent);
+  }
+  .name { margin: 0; font-weight: 600; }
+  .meta { margin: 0.2rem 0 0; font-size: 0.85rem; color: var(--muted); }
+
+  /* Photos sit as one centred row of three. */
+  .moments {
+    list-style: none;
+    padding: 0;
+    margin: 0 auto 3rem;
+    max-width: 60rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    gap: 1.25rem;
+  }
+
+  .credits {
+    display: grid;
+    gap: 1.5rem;
+    margin: 0 0 1.5rem;
+  }
+  @media (min-width: 760px) { .credits { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  h4 {
+    margin: 0 0 0.6rem;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+  }
+  .credit-col ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.75rem; }
+  .credit {
+    display: flex;
+    justify-content: space-between;
     align-items: baseline;
-    padding: 0.5rem 0;
-    border-bottom: 1px dashed var(--border);
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: var(--surface);
   }
-  .place {
-    flex: 0 0 2.75rem;
-    font-weight: 600;
-    color: var(--accent);
-    font-variant-numeric: tabular-nums;
+  .credit .name { margin: 0; font-weight: 600; min-width: 0; }
+  .date { flex: none; font-size: 0.8rem; color: var(--muted); }
+
+  .mentoring {
+    display: grid;
+    gap: 0.3rem;
+    padding: 1rem 1.25rem;
+    background: var(--surface);
   }
-  .contest a, .credits a { color: var(--text); }
-  .contest a:hover, .credits a:hover { color: var(--accent); }
-  .role {
-    flex: 0 0 3.75rem;
-    font-size: 0.75rem;
-    color: var(--accent);
-  }
-  .date { font-size: 0.8rem; }
-  .teaching { margin: 0; }
+  .mentoring h4 { margin: 0; }
+  .mentoring p { margin: 0; }
 </style>

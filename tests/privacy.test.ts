@@ -8,6 +8,11 @@ describe("privacy checks", () => {
     }
   });
 
+  it("ignores only the numbers explicitly allowed", () => {
+    expect(containsPhone("whatsapp +880 1712-345678", ["+8801712345678"])).toBe(false);
+    expect(containsPhone("whatsapp +880 1712-345678 or 01812345678", ["+8801712345678"])).toBe(true);
+  });
+
   it("does not flag years, ratings or dates as phone numbers", () => {
     expect(containsPhone("Jan 2020 – Jun 2025, max rating 1533, 1500+ problems, 2026-11-20")).toBe(false);
   });

@@ -25,23 +25,19 @@ describe("built page: shell and hero", () => {
     expect(html).toContain('property="og:description"');
   });
 
-  it("has the about section", () => {
-    expect(html).toContain('id="about"');
-  });
-
   it("links the email and every profile link", () => {
-    expect(html).toContain(`mailto:${profile.email}`);
+    expect(html).toContain(`to=${encodeURIComponent(profile.email)}`);
     for (const l of profile.links) expect(html).toContain(`href="${l.url}"`);
   });
 
   it("never shows a phone number or an internal company name", () => {
-    expect(containsPhone(html)).toBe(false);
+    expect(containsPhone(html, profile.whatsapp ? [profile.whatsapp] : [])).toBe(false);
     expect(findInternalNames(html)).toEqual([]);
   });
 
   it("sets the theme before paint without failing when storage is blocked", () => {
     const head = html.slice(0, indexOf("</head>"));
-    expect(head).toMatch(/try\s*{[^}]*localStorage/);
+    expect(head).toMatch(/try\s*{[^}]*sessionStorage/);
   });
 });
 
@@ -57,23 +53,24 @@ describe("built page: experience and projects", () => {
     expect(html).toContain("Jun 2025 – Present");
   });
 
-  it("features WealthTracker in a featured card", () => {
-    expect(html).toMatch(/class="[^"]*featured[^"]*"[^]*?WealthTracker/);
-    const featuredAt = html.search(/class="[^"]*featured/);
-    expect(featuredAt).toBeLessThan(indexOf("WealthTracker"));
+  it("gives every project an equal, numbered row, WealthTracker first", () => {
+    const rows = html.match(/<li class="row[^"]*"/g) ?? [];
+    expect(rows).toHaveLength(profile.projects.length);
+    expect(html).toMatch(/01 · [^<]*<\/p>\s*<h3[^>]*>WealthTracker/);
   });
 
   it("shows every project name", () => {
     for (const p of profile.projects) expect(html).toContain(p.name);
   });
 
-  it("links public repos and marks private ones without a link", () => {
+  it("links public repos and never links a private one", () => {
     expect(html).toContain('href="https://github.com/NotTabassum/meal-management"');
+    const rows = html.split(/<li class="row/).slice(1);
     for (const p of profile.projects.filter((p) => p.private)) {
-      const card = html.slice(html.indexOf(p.name), html.indexOf("Private repo", html.indexOf(p.name)));
-      expect(card, p.name).not.toContain("github.com");
+      const row = rows.find((r) => r.includes(`>${p.name}</h3>`));
+      expect(row, p.name).toBeDefined();
+      expect(row, p.name).not.toContain("github.com/NotTabassum");
     }
-    expect(html).toContain("Private repo");
   });
 });
 
