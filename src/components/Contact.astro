@@ -4,11 +4,8 @@ import profile from "../data/profile";
 import { formatMonth } from "../lib/format";
 import { gmailCompose, whatsappUrl } from "../lib/contact";
 
-// Every other way to reach me, each with the handle it goes to.
-const channels = [
-  ...(profile.whatsapp ? [{ label: "WhatsApp", url: whatsappUrl(profile.whatsapp), handle: "Send a message" }] : []),
-  ...profile.links.map((l) => ({ ...l, handle: new URL(l.url).pathname.split("/").filter(Boolean).pop() ?? l.url })),
-];
+// Profiles, each with the handle it goes to.
+const channels = profile.links.map((l) => ({ ...l, handle: new URL(l.url).pathname.split("/").filter(Boolean).pop() ?? l.url }));
 ---
 <Section id="contact" label="Contact" tone="tint">
   <div class="layout">
@@ -21,12 +18,15 @@ const channels = [
         </button>
         <span class="copied" role="status" aria-live="polite"></span>
       </div>
+      {profile.whatsapp && (
+        <a class="link whatsapp" href={whatsappUrl(profile.whatsapp)} rel="noopener noreferrer" target="_blank">WhatsApp<span class="arrow" aria-hidden="true">↗</span></a>
+      )}
     </div>
     <dl class="channels">
       {channels.map((c) => (
         <div>
           <dt class="label">{c.label}</dt>
-          <dd><a class="link" href={c.url} rel={c.label === "WhatsApp" ? "noopener noreferrer" : "me noopener noreferrer"} target="_blank">{c.handle}<span class="arrow" aria-hidden="true">↗</span></a></dd>
+          <dd><a class="link" href={c.url} rel="me noopener noreferrer" target="_blank">{c.handle}<span class="arrow" aria-hidden="true">↗</span></a></dd>
         </div>
       ))}
     </dl>
@@ -101,7 +101,8 @@ const channels = [
     border-bottom: 1px solid var(--border);
   }
   .channels dd { margin: 0; overflow-wrap: anywhere; }
-  .channels .arrow { margin-left: 0.2em; }
+  .channels .arrow, .whatsapp .arrow { margin-left: 0.2em; }
+  .whatsapp { display: inline-block; margin-top: 1rem; font-size: 1.1rem; }
   /* Wide screens: the message and email on the left, the other channels on the right. */
   @media (min-width: 860px) {
     .layout { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); column-gap: clamp(2.5rem, 6vw, 5rem); align-items: start; }
