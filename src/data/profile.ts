@@ -192,7 +192,7 @@ const profile: Profile = {
   hobbies: [
     { title: "Classical Dance", text: "Trained as a classical Kathak dancer, with four years of study at Bulbul Lalitakala Academy (BAFA)." },
     { title: "Running", text: "A recreational runner who enjoys taking part in marathons; running keeps me focused, disciplined and ready for the next challenge." },
-    { title: "Travel & adventure", text: "An avid traveller drawn to new places and new experiences, from scuba diving beneath the sea to parasailing above it." },
+    { title: "Travel & Adventure", text: "An avid traveller drawn to new places and new experiences, from scuba diving beneath the sea to parasailing above it." },
   ],
 
   updated: "2026-11-20",

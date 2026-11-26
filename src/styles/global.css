@@ -30,7 +30,6 @@
 }
 
 /* The header wraps to two rows on phones (see Base.astro). */
-@media (max-width: 639px) { :root { --header-h: 6.25rem; } }
 
 /* Ocean Depths, dark: the theme's own navy ground. */
 @media (prefers-color-scheme: dark) {

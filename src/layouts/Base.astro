@@ -52,12 +52,25 @@ const nav = [
     <header class="topbar">
       <div class="container topbar-inner">
         <a class="brand" href="#top" translate="no">{profile.name}</a>
-        <nav aria-label="Sections">
+        <nav id="site-nav" aria-label="Sections">
           {nav.map(([id, label]) => <a href={`#${id}`}>{label}</a>)}
         </nav>
         <ThemeToggle />
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Menu">
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path class="bars" d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path class="cross" d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
       </div>
     </header>
+    <script is:inline>
+      // Phones: the section links open from the menu button and close again once one is picked.
+      (function () {
+        var bar = document.querySelector(".topbar"), btn = bar.querySelector(".menu-toggle");
+        function set(open) { bar.toggleAttribute("data-open", open); btn.setAttribute("aria-expanded", String(open)); }
+        btn.addEventListener("click", function () { set(!bar.hasAttribute("data-open")); });
+        bar.querySelectorAll("nav a").forEach(function (a) { a.addEventListener("click", function () { set(false); }); });
+        document.addEventListener("keydown", function (e) { if (e.key === "Escape") set(false); });
+      })();
+    </script>
     <main id="main">
       <slot />
     </main>
@@ -102,10 +115,42 @@ const nav = [
   }
   nav a:hover { color: var(--text); }
 
-  /* Narrow screens: brand and theme toggle on one line, section links scroll underneath. */
-  @media (max-width: 639px) {
-    .topbar-inner { flex-wrap: wrap; row-gap: 0; column-gap: 1rem; padding-block: 0.5rem; }
+  .menu-toggle {
+    display: none;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-right: -0.5rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+  }
+  .menu-toggle .cross, .topbar[data-open] .menu-toggle .bars { display: none; }
+  .topbar[data-open] .menu-toggle .cross { display: inline; }
+
+  /* Phones and small tablets, where the links don't fit beside the name: they drop down from a menu button. */
+  @media (max-width: 767px) {
+    .topbar-inner { gap: 0.25rem; }
     .topbar-inner :global(.theme-toggle) { margin-left: auto; }
-    nav { order: 3; flex-basis: 100%; margin-left: 0; padding-top: 0.25rem; }
+    .menu-toggle { display: inline-grid; }
+    nav {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      flex-direction: column;
+      gap: 0;
+      margin: 0;
+      padding: 0.25rem 16px 0.75rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      font-size: 1.05rem;
+    }
+    .topbar[data-open] nav { display: flex; }
+    nav a { padding-block: 0.8rem; border-bottom: 1px solid var(--border); color: var(--text); }
+    nav a:last-child { border-bottom: 0; }
   }
 </style>

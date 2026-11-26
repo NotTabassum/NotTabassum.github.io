@@ -30,12 +30,12 @@ const number = (i: number) => String(i + 1).padStart(2, "0");
             </div>
             <div>
               <dt>Stack</dt>
-              <dd>{p.stack.join(" · ")}</dd>
+              <dd class="list">{p.stack.map((item, i) => <span>{item}{i < p.stack.length - 1 && " ·"}</span>)}</dd>
             </div>
             {p.tools && (
               <div>
                 <dt>Tools</dt>
-                <dd>{p.tools.join(" · ")}</dd>
+                <dd class="list">{p.tools.map((item, i) => <span>{item}{i < p.tools!.length - 1 && " ·"}</span>)}</dd>
               </div>
             )}
           </dl>
@@ -71,6 +71,9 @@ const number = (i: number) => String(i + 1).padStart(2, "0");
   .facts div { display: grid; grid-template-columns: 5.5rem minmax(0, 1fr); gap: 1rem; }
   .facts dt { color: var(--muted); }
   .facts dd { margin: 0; }
+  /* Each item keeps its separator, so a wrapped line never starts with "·". */
+  .facts .list { display: flex; flex-wrap: wrap; column-gap: 0.3em; }
+  .facts .list span { white-space: nowrap; }
   .dot {
     display: inline-block;
     width: 0.5rem;
